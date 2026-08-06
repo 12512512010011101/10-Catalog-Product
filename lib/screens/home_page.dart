@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../data/dummy_products.dart';
 import '../widgets/product_card.dart';
+import '../theme/app_theme.dart';
 import 'detail_page.dart';
 import 'add_product_page.dart';
 import 'favorite_page.dart';
@@ -41,7 +42,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _goToAddProduct() async {
     final newProduct = await Navigator.push<Product>(
       context,
-      MaterialPageRoute(builder: (_) => const AddProductPage()),
+      fadeSlideRoute(const AddProductPage()),
     );
     if (newProduct != null) {
       setState(() => _products.add(newProduct));
@@ -51,8 +52,8 @@ class _HomePageState extends State<HomePage> {
   void _goToFavorite() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => FavoritePage(
+      fadeSlideRoute(
+        FavoritePage(
           products: _products,
           onFavoriteToggle: _toggleFavorite,
         ),
@@ -63,8 +64,8 @@ class _HomePageState extends State<HomePage> {
   void _goToDetail(Product product) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => DetailPage(
+      fadeSlideRoute(
+        DetailPage(
           product: product,
           onFavoriteToggle: _toggleFavorite,
         ),
@@ -75,65 +76,162 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final filtered = _filteredProducts;
+    final favoriteCount = _products.where((p) => p.isFavorite).length;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Katalog Produk'),
-        actions: [
-          IconButton(
-            onPressed: _goToFavorite,
-            icon: const Icon(Icons.favorite),
-            tooltip: 'Produk Favorit',
-          ),
-        ],
-      ),
+      backgroundColor: AppColors.background,
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Cari produk...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                isDense: true,
-              ),
-              onChanged: (value) => setState(() => _searchQuery = value),
+          // Header gradient ungu, mirip hero section pada dashboard referensi.
+          GradientHeader(
+            height: 210,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Katalog Produk',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Temukan produk favoritmu',
+                          style: TextStyle(color: Colors.white70, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                    Material(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      shape: const CircleBorder(),
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: _goToFavorite,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              const Icon(Icons.favorite, color: Colors.white, size: 22),
+                              if (favoriteCount > 0)
+                                Positioned(
+                                  right: -4,
+                                  top: -4,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(3),
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.favorite,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                                    child: Text(
+                                      '$favoriteCount',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(color: Colors.white, fontSize: 10),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          SizedBox(
-            height: 40,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              itemCount: _categories.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder: (context, index) {
-                final cat = _categories[index];
-                final isSelected = cat == _selectedCategory;
-                return ChoiceChip(
-                  label: Text(cat),
-                  selected: isSelected,
-                  onSelected: (_) => setState(() => _selectedCategory = cat),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: filtered.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    itemCount: filtered.length,
-                    itemBuilder: (context, index) {
-                      final product = filtered[index];
-                      return ProductCard(
-                        product: product,
-                        onTap: () => _goToDetail(product),
-                        onFavoriteToggle: () => _toggleFavorite(product),
-                      );
-                    },
+          // Search bar mengambang di atas header (overlap), senada dengan
+          // kartu saldo yang menumpuk di atas header pada referensi.
+          Transform.translate(
+            offset: const Offset(0, -28),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Material(
+                elevation: 6,
+                shadowColor: Colors.black26,
+                borderRadius: BorderRadius.circular(16),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Cari produk...',
+                    hintStyle: TextStyle(color: Colors.grey.shade500),
+                    prefixIcon: const Icon(Icons.search, color: AppColors.primary),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                   ),
+                  onChanged: (value) => setState(() => _searchQuery = value),
+                ),
+              ),
+            ),
+          ),
+          Transform.translate(
+            offset: const Offset(0, -16),
+            child: SizedBox(
+              height: 42,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: _categories.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final cat = _categories[index];
+                  final isSelected = cat == _selectedCategory;
+                  return ChoiceChip(
+                    label: Text(
+                      cat,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : AppColors.textDark,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                    selected: isSelected,
+                    showCheckmark: false,
+                    selectedColor: AppColors.primary,
+                    backgroundColor: Colors.white,
+                    side: BorderSide(color: Colors.grey.shade200),
+                    onSelected: (_) => setState(() => _selectedCategory = cat),
+                  );
+                },
+              ),
+            ),
+          ),
+          Expanded(
+            child: Transform.translate(
+              offset: const Offset(0, -8),
+              child: filtered.isEmpty
+                  ? _buildEmptyState()
+                  : ListView.builder(
+                      key: ValueKey('$_selectedCategory-$_searchQuery'),
+                      padding: const EdgeInsets.only(top: 4, bottom: 90),
+                      itemCount: filtered.length,
+                      itemBuilder: (context, index) {
+                        final product = filtered[index];
+                        return StaggeredFadeIn(
+                          index: index,
+                          child: ProductCard(
+                            product: product,
+                            onTap: () => _goToDetail(product),
+                            onFavoriteToggle: () => _toggleFavorite(product),
+                          ),
+                        );
+                      },
+                    ),
+            ),
           ),
         ],
       ),

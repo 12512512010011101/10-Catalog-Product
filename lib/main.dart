@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'screens/home_page.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const MyApp());
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -12,10 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Katalog Produk',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-        ),
+      theme: AppTheme.theme,
       home: const HomePage(),
     );
   }

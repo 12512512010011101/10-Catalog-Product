@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
+import '../theme/app_theme.dart';
 
 class DetailPage extends StatefulWidget {
   final Product product;
@@ -29,61 +30,167 @@ class _DetailPageState extends State<DetailPage> {
   Widget build(BuildContext context) {
     final product = widget.product;
     return Scaffold(
-      appBar: AppBar(title: Text(product.name)),
+      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(12),
+            GradientHeader(
+              height: 230,
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 56),
+              child: Row(
+                children: [
+                  Material(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: () => Navigator.pop(context),
+                      child: const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Icon(Icons.arrow_back, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Detail Produk',
+                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-              child: product.imagePath.isNotEmpty
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        product.imagePath,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Icon(
-                          Icons.image_not_supported,
-                          size: 64,
-                          color: Colors.grey,
+            ),
+            Transform.translate(
+              offset: const Offset(0, -70),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Gambar produk mengambang di atas header, mirip kartu
+                    // rumah sakit yang menumpuk di atas gradient pada referensi.
+                    Material(
+                      elevation: 6,
+                      shadowColor: Colors.black26,
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        width: double.infinity,
+                        height: 180,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.all(6),
+                        child: Hero(
+                          tag: 'product-image-${product.id}',
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              color: AppColors.primary.withValues(alpha: 0.08),
+                              child: product.imagePath.isNotEmpty
+                                  ? Image.asset(
+                                      product.imagePath,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => const Icon(
+                                        Icons.image_not_supported,
+                                        size: 56,
+                                        color: AppColors.primary,
+                                      ),
+                                    )
+                                  : const Icon(Icons.shopping_bag_outlined, size: 56, color: AppColors.primary),
+                            ),
+                          ),
                         ),
                       ),
-                    )
-                  : const Icon(Icons.shopping_bag_outlined, size: 64, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              product.name,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(product.category, style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
-            const SizedBox(height: 12),
-            Text(
-              _formatPrice(product.price),
-              style: const TextStyle(fontSize: 20, color: Colors.deepPurple, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text('Stok tersedia: ${product.stock}', style: const TextStyle(fontSize: 14)),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  setState(() => widget.onFavoriteToggle(product));
-                },
-                icon: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
-                label: Text(product.isFavorite ? 'Hapus dari Favorit' : 'Tambah ke Favorit'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: product.isFavorite ? Colors.red : Colors.deepPurple,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            product.name,
+                            style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            product.category,
+                            style: const TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    // Kartu info harga & stok, gaya "e-card" ringkas.
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4)),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Harga', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                              const SizedBox(height: 2),
+                              Text(
+                                _formatPrice(product.price),
+                                style: const TextStyle(fontSize: 19, color: AppColors.primary, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                          Container(width: 1, height: 34, color: Colors.grey.shade200),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Stok tersedia', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                              const SizedBox(height: 2),
+                              Text(
+                                '${product.stock} unit',
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() => widget.onFavoriteToggle(product));
+                        },
+                        icon: TweenAnimationBuilder<double>(
+                          key: ValueKey(product.isFavorite),
+                          tween: Tween(begin: 0.4, end: 1.0),
+                          duration: const Duration(milliseconds: 350),
+                          curve: Curves.elasticOut,
+                          builder: (context, scale, child) => Transform.scale(scale: scale, child: child),
+                          child: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
+                        ),
+                        label: Text(product.isFavorite ? 'Hapus dari Favorit' : 'Tambah ke Favorit'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: product.isFavorite ? AppColors.favorite : AppColors.primary,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
               ),
             ),

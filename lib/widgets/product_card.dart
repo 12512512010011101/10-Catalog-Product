@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
+import '../theme/app_theme.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -24,65 +25,97 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      elevation: 2,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  width: 64,
-                  height: 64,
-                  color: Colors.grey.shade200,
-                  child: product.imagePath.isNotEmpty
-                      ? Image.asset(
-                          product.imagePath,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.image_not_supported, color: Colors.grey),
-                        )
-                      : const Icon(Icons.shopping_bag_outlined, color: Colors.grey, size: 32),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        elevation: 1.5,
+        shadowColor: Colors.black12,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(18),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Hero(
+                    tag: 'product-image-${product.id}',
+                    child: Container(
+                      width: 56,
+                      height: 56,
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      child: product.imagePath.isNotEmpty
+                          ? Image.asset(
+                              product.imagePath,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.shopping_bag_outlined, color: AppColors.primary),
+                            )
+                          : const Icon(Icons.shopping_bag_outlined, color: AppColors.primary, size: 26),
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: AppColors.textDark,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        '${product.category} · Stok ${product.stock}',
+                        style: const TextStyle(color: AppColors.textMuted, fontSize: 12.5),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      product.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      product.category,
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
                       _formatPrice(product.price),
-                      style: const TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
-                    Text('Stok: ${product.stock}', style: const TextStyle(fontSize: 12)),
+                    const SizedBox(height: 4),
+                    InkWell(
+                      onTap: onFavoriteToggle,
+                      borderRadius: BorderRadius.circular(20),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: TweenAnimationBuilder<double>(
+                          key: ValueKey(product.isFavorite),
+                          tween: Tween(begin: 0.5, end: 1.0),
+                          duration: const Duration(milliseconds: 350),
+                          curve: Curves.elasticOut,
+                          builder: (context, scale, child) => Transform.scale(scale: scale, child: child),
+                          child: Icon(
+                            product.isFavorite ? Icons.favorite : Icons.favorite_border,
+                            size: 20,
+                            color: product.isFavorite ? AppColors.favorite : Colors.grey.shade400,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              IconButton(
-                onPressed: onFavoriteToggle,
-                icon: Icon(
-                  product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: product.isFavorite ? Colors.red : Colors.grey,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -5,22 +5,23 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  static const Color primary = Color(0xFF7C4DFF);
-  static const Color primaryDark = Color(0xFF2A1859);
-  static const Color primaryLight = Color(0xFFB39DFF);
+  // Tema baru: hitam elegan + putih bersih, terinspirasi referensi.
+  static const Color primary = Color(0xFF111111);      // hitam pekat (tombol, header)
+  static const Color primaryDark = Color(0xFF000000);
+  static const Color primaryLight = Color(0xFF3A3A3A);
 
-  static const Color background = Color(0xFFF6F4FB);
+  static const Color background = Color(0xFFF5F5F5);   // abu sangat muda
   static const Color surface = Colors.white;
 
-  static const Color textDark = Color(0xFF231B3B);
-  static const Color textMuted = Color(0xFF8B849C);
+  static const Color textDark = Color(0xFF161616);
+  static const Color textMuted = Color(0xFF8A8A8A);
 
-  static const Color favorite = Color(0xFFFF5A7A);
+  static const Color favorite = Color(0xFFFF3B5C);      // merah pink untuk love/heart
 
   static const LinearGradient headerGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [primaryDark, Color(0xFF4B2A9E), primary],
+    colors: [primaryDark, Color(0xFF1E1E1E), primary],
   );
 }
 

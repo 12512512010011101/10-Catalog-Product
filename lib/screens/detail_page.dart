@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/auto_slide_gallery.dart';
 import '../models/product.dart';
 import '../theme/app_theme.dart';
 
@@ -69,39 +70,10 @@ class _DetailPageState extends State<DetailPage> {
                   children: [
                     // Gambar produk mengambang di atas header, mirip kartu
                     // rumah sakit yang menumpuk di atas gradient pada referensi.
-                    Material(
-                      elevation: 6,
-                      shadowColor: Colors.black26,
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        width: double.infinity,
-                        height: 180,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: const EdgeInsets.all(6),
-                        child: Hero(
-                          tag: 'product-image-${product.id}',
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: Container(
-                              color: AppColors.primary.withValues(alpha: 0.08),
-                              child: product.imagePath.isNotEmpty
-                                  ? Image.asset(
-                                      product.imagePath,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) => const Icon(
-                                        Icons.image_not_supported,
-                                        size: 56,
-                                        color: AppColors.primary,
-                                      ),
-                                    )
-                                  : const Icon(Icons.shopping_bag_outlined, size: 56, color: AppColors.primary),
-                            ),
-                          ),
-                        ),
-                      ),
+                    AutoSlideGallery(
+                      imagePaths: product.imagePaths,
+                      height: 220,
+                      heroTag: 'product-image-${product.id}',
                     ),
                     const SizedBox(height: 20),
                     Row(

@@ -27,146 +27,171 @@ class _DetailPageState extends State<DetailPage> {
     return 'Rp$withDots';
   }
 
+  Widget _circleIconButton({required IconData icon, required VoidCallback onTap, Color? iconColor}) {
+    return Material(
+      color: Colors.white,
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.grey.shade200)),
+          child: Icon(icon, size: 18, color: iconColor ?? AppColors.textDark),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final product = widget.product;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GradientHeader(
-              height: 230,
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 56),
-              child: Row(
+      // Sama seperti home_page: latar putih polos, tanpa header gradient hitam.
+      backgroundColor: AppColors.surface,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ---- Baris atas: tombol back, judul, tombol favorit ----
+              // Dibuat konsisten dengan header di HomePage: lingkaran putih
+              // dengan border tipis, bukan bar gelap seperti sebelumnya.
+              Row(
                 children: [
-                  Material(
-                    color: Colors.white.withValues(alpha: 0.15),
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      onTap: () => Navigator.pop(context),
-                      child: const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(Icons.arrow_back, color: Colors.white),
-                      ),
+                  _circleIconButton(
+                    icon: Icons.arrow_back,
+                    onTap: () => Navigator.pop(context),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Detail Produk',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textDark),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Detail Produk',
-                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  _circleIconButton(
+                    icon: product.isFavorite ? Icons.favorite : Icons.favorite_border,
+                    iconColor: product.isFavorite ? AppColors.favorite : AppColors.textDark,
+                    onTap: () => setState(() => widget.onFavoriteToggle(product)),
                   ),
                 ],
               ),
-            ),
-            Transform.translate(
-              offset: const Offset(0, -70),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Gambar produk mengambang di atas header, mirip kartu
-                    // rumah sakit yang menumpuk di atas gradient pada referensi.
-                    AutoSlideGallery(
-                      imagePaths: product.imagePaths,
-                      height: 220,
-                      heroTag: 'product-image-${product.id}',
+              const SizedBox(height: 20),
+
+              // ---- Galeri gambar produk ----
+              AutoSlideGallery(
+                imagePaths: product.imagePaths,
+                height: 260,
+                heroTag: 'product-image-${product.id}',
+              ),
+              const SizedBox(height: 20),
+
+              // ---- Nama + kategori ----
+              // Badge kategori dibuat abu-abu muda, senada dengan tab
+              // kategori di HomePage — bukan hitam seperti sebelumnya.
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      product.name,
+                      style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold, color: AppColors.textDark),
                     ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.background,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      product.category,
+                      style: const TextStyle(color: AppColors.textDark, fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+
+              // ---- Kartu harga & stok ----
+              // Sebelumnya pakai boxShadow (efek melayang). Diganti border
+              // tipis abu-abu supaya konsisten dengan gaya flat di HomePage.
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Text(
-                            product.name,
-                            style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold, color: AppColors.textDark),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            product.category,
-                            style: const TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w600),
-                          ),
+                        const Text('Harga', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                        const SizedBox(height: 2),
+                        Text(
+                          _formatPrice(product.price),
+                          style: const TextStyle(fontSize: 19, color: AppColors.textDark, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 14),
-                    // Kartu info harga & stok, gaya "e-card" ringkas.
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(18),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4)),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Harga', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
-                              const SizedBox(height: 2),
-                              Text(
-                                _formatPrice(product.price),
-                                style: const TextStyle(fontSize: 19, color: AppColors.primary, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          Container(width: 1, height: 34, color: Colors.grey.shade200),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Stok tersedia', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
-                              const SizedBox(height: 2),
-                              Text(
-                                '${product.stock} unit',
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          setState(() => widget.onFavoriteToggle(product));
-                        },
-                        icon: TweenAnimationBuilder<double>(
-                          key: ValueKey(product.isFavorite),
-                          tween: Tween(begin: 0.4, end: 1.0),
-                          duration: const Duration(milliseconds: 350),
-                          curve: Curves.elasticOut,
-                          builder: (context, scale, child) => Transform.scale(scale: scale, child: child),
-                          child: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
+                    Container(width: 1, height: 34, color: Colors.grey.shade300),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Stok tersedia', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${product.stock} unit',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
                         ),
-                        label: Text(product.isFavorite ? 'Hapus dari Favorit' : 'Tambah ke Favorit'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: product.isFavorite ? AppColors.favorite : AppColors.primary,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
                   ],
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+
+              // ---- Tombol favorit ----
+              // Dulu: full-width, background hitam pekat ("card hitam" yang
+              // dikomplain). Sekarang: outline tipis + teks hitam, tombol
+              // solid hitam cuma dipakai kalau produk LAGI difavoritkan
+              // (state aktif) supaya nggak dominan terus-terusan.
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => setState(() => widget.onFavoriteToggle(product)),
+                  icon: TweenAnimationBuilder<double>(
+                    key: ValueKey(product.isFavorite),
+                    tween: Tween(begin: 0.4, end: 1.0),
+                    duration: const Duration(milliseconds: 350),
+                    curve: Curves.elasticOut,
+                    builder: (context, scale, child) => Transform.scale(scale: scale, child: child),
+                    child: Icon(
+                      product.isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: product.isFavorite ? AppColors.favorite : AppColors.textDark,
+                    ),
+                  ),
+                  label: Text(
+                    product.isFavorite ? 'Hapus dari Favorit' : 'Tambah ke Favorit',
+                    style: TextStyle(color: product.isFavorite ? AppColors.favorite : AppColors.textDark),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    side: BorderSide(color: product.isFavorite ? AppColors.favorite : Colors.grey.shade300),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

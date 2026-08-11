@@ -5,6 +5,7 @@ import '../theme/app_theme.dart';
 import 'detail_page.dart';
 import 'add_product_page.dart';
 import 'favorite_page.dart';
+import '../widgets/promo_banner_carousel.dart';
 
 enum _SortOption { defaultOrder, priceLowHigh, priceHighLow, stockHighLow, nameAZ }
 
@@ -271,61 +272,34 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(height: 20),
 
-                    // ---- Kartu promo ----
-                    // Ditambahkan sesuai referensi (kartu gelap "Super Sale").
-                    // Murni dekoratif/informatif dulu -- tombol "Belanja
-                    // Sekarang" belum diarahkan ke fitur checkout karena
-                    // project ini belum punya halaman itu.
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      clipBehavior: Clip.antiAlias,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(22),
-                      ),
-                      child: Stack(
-                        children: [
-                          // Lingkaran-lingkaran tipis di kanan, meniru motif
-                          // radiating circles pada referensi.
-                          Positioned(
-                            right: -30,
-                            top: -30,
-                            child: _decorativeRing(140),
-                          ),
-                          Positioned(
-                            right: -10,
-                            bottom: -40,
-                            child: _decorativeRing(90),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Promo Spesial',
-                                style: TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 4),
-                              const Text(
-                                'Diskon hingga 50%',
-                                style: TextStyle(color: Colors.white70, fontSize: 13),
-                              ),
-                              const SizedBox(height: 16),
-                              ElevatedButton(
-                                onPressed: _openSortSheet,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: _promoAccent,
-                                  foregroundColor: AppColors.primaryDark,
-                                  elevation: 0,
-                                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                                ),
-                                child: const Text('Belanja Sekarang', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.5)),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                    // ---- Carousel banner promo (auto-slide) ----
+                    // Dulu cuma 1 kartu statis dengan 2 lingkaran dekoratif
+                    // yang kebetulan overlap mirip logo angka "6". Sekarang
+                    // diganti PromoBannerCarousel: bisa banyak banner,
+                    // geser otomatis + swipe manual, motif dekoratifnya
+                    // pakai ikon sesuai tema banner (bukan lingkaran polos).
+                    PromoBannerCarousel(
+                      height: 150,
+                      banners: [
+                        PromoBannerData(
+                          title: 'Promo Spesial',
+                          subtitle: 'Diskon hingga 75%',
+                          buttonLabel: 'Belanja Sekarang',
+                          icon: Icons.local_offer_rounded,
+                          backgroundColor: AppColors.primary,
+                          accentColor: _promoAccent,
+                          onButtonTap: _openSortSheet,
+                        ),
+                        PromoBannerData(
+                          title: 'Kupon Belanja',
+                          subtitle: 'Klaim kupon gratis ongkir hari ini',
+                          buttonLabel: 'Klaim Kupon',
+                          icon: Icons.confirmation_number_rounded,
+                          backgroundColor: const Color(0xFF1E3A5F),
+                          accentColor: const Color(0xFF4FB6FF),
+                          onButtonTap: _openSortSheet,
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 20),
 
@@ -471,19 +445,6 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  // Satu lingkaran outline tipis, dipakai berlapis-lapis sebagai hiasan
-  // di kartu promo (meniru motif "radiating circles" pada referensi).
-  Widget _decorativeRing(double diameter) {
-    return Container(
-      width: diameter,
-      height: diameter,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08), width: 10),
       ),
     );
   }

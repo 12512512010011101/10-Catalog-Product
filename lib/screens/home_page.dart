@@ -282,12 +282,30 @@ class _HomePageState extends State<HomePage> {
                       height: 150,
                       banners: [
                         PromoBannerData(
+                          title: 'Produk Terbaru',
+                          subtitle: 'Koleksi baru minggu ini sudah tersedia',
+                          buttonLabel: 'Lihat Koleksi',
+                          icon: Icons.auto_awesome_rounded,
+                          backgroundColor: const Color(0xFF2A1B54),
+                          accentColor: const Color(0xFFB39DFF),
+                          onButtonTap: () => setState(() => _sortOption = _SortOption.defaultOrder),
+                        ),
+                        PromoBannerData(
                           title: 'Promo Spesial',
                           subtitle: 'Diskon hingga 75%',
                           buttonLabel: 'Belanja Sekarang',
                           icon: Icons.local_offer_rounded,
                           backgroundColor: AppColors.primary,
                           accentColor: _promoAccent,
+                          onButtonTap: _openSortSheet,
+                        ),
+                        PromoBannerData(
+                          title: 'Flash Sale',
+                          subtitle: 'Diskon kilat, buruan sebelum kehabisan',
+                          buttonLabel: 'Serbu Sekarang',
+                          icon: Icons.bolt_rounded,
+                          backgroundColor: const Color(0xFF6E1E1E),
+                          accentColor: const Color(0xFFF5A623),
                           onButtonTap: _openSortSheet,
                         ),
                         PromoBannerData(

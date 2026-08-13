@@ -35,6 +35,11 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  # Dipakai untuk fitur "Pilih dari Galeri" di halaman Tambah Produk, supaya
+  # bisa ambil foto langsung dari galeri/kamera device (jalan di Web, Android,
+  # iOS, dan Desktop).
+  image_picker: ^1.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

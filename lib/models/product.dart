@@ -1,12 +1,15 @@
 // Model data untuk satu produk.
 // Sekarang mendukung LEBIH DARI SATU gambar (imagePaths), supaya bisa
 // ditampilkan sebagai slideshow/carousel otomatis di halaman detail.
+// Juga menambahkan field `description` supaya tiap produk bisa punya
+// deskripsi singkat yang ditampilkan di halaman detail.
 class Product {
   final String id;
   final String name;
   final String category;
   final double price;
   final int stock;
+  final String description;
   final List<String> imagePaths; // <- ganti dari imagePath tunggal jadi list
   bool isFavorite;
 
@@ -16,6 +19,7 @@ class Product {
     required this.category,
     required this.price,
     required this.stock,
+    this.description = '',
     List<String>? imagePaths,
     String imagePath = '', // tetap diterima untuk kompatibilitas kode lama
     this.isFavorite = false,

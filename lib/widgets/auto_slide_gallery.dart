@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import 'product_image.dart';
 
 /// Galeri gambar produk yang otomatis geser sendiri (auto-slide),
 /// dengan jeda MINIMAL 1.5 detik antar gambar, dan bisa juga digeser
@@ -90,14 +91,10 @@ class _AutoSlideGalleryState extends State<AutoSlideGallery> {
                 itemBuilder: (context, index) {
                   return Container(
                     color: AppColors.primary.withValues(alpha: 0.06),
-                    child: Image.asset(
-                      images[index],
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => const Icon(
-                        Icons.image_not_supported,
-                        size: 56,
-                        color: AppColors.primary,
-                      ),
+                    child: ProductImage(
+                      path: images[index],
+                      placeholderIcon: Icons.image_not_supported,
+                      placeholderIconSize: 56,
                     ),
                   );
                 },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../theme/app_theme.dart';
+import 'product_image.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -47,14 +48,11 @@ class ProductCard extends StatelessWidget {
                       width: 56,
                       height: 56,
                       color: AppColors.primary.withValues(alpha: 0.1),
-                      child: product.imagePath.isNotEmpty
-                          ? Image.asset(
-                              product.imagePath,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.shopping_bag_outlined, color: AppColors.primary),
-                            )
-                          : const Icon(Icons.shopping_bag_outlined, color: AppColors.primary, size: 26),
+                      child: ProductImage(
+                        path: product.imagePath,
+                        placeholderIcon: Icons.shopping_bag_outlined,
+                        placeholderIconSize: 26,
+                      ),
                     ),
                   ),
                 ),

@@ -57,9 +57,11 @@ class _DetailPageState extends State<DetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ---- Baris atas: tombol back, judul, tombol favorit ----
-              // Dibuat konsisten dengan header di HomePage: lingkaran putih
-              // dengan border tipis, bukan bar gelap seperti sebelumnya.
+              // ---- Baris atas: tombol back + judul ----
+              // Sebelumnya ada 2 tombol favorit di halaman ini (ikon kecil
+              // di sini + tombol besar "Tambah ke Favorit" di bawah), jadi
+              // membingungkan mana yang harus dipakai. Sekarang cuma SATU:
+              // tombol besar di bawah dekat harga & stok.
               Row(
                 children: [
                   _circleIconButton(
@@ -72,11 +74,6 @@ class _DetailPageState extends State<DetailPage> {
                       'Detail Produk',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textDark),
                     ),
-                  ),
-                  _circleIconButton(
-                    icon: product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                    iconColor: product.isFavorite ? AppColors.favorite : AppColors.textDark,
-                    onTap: () => setState(() => widget.onFavoriteToggle(product)),
                   ),
                 ],
               ),
@@ -158,6 +155,22 @@ class _DetailPageState extends State<DetailPage> {
                 ),
               ),
               const SizedBox(height: 20),
+
+              // ---- Deskripsi produk ----
+              // Cuma ditampilkan kalau memang diisi, supaya produk lama
+              // yang belum punya deskripsi tidak tampil bagian kosong.
+              if (product.description.isNotEmpty) ...[
+                const Text(
+                  'Deskripsi',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  product.description,
+                  style: const TextStyle(fontSize: 13.5, color: AppColors.textMuted, height: 1.5),
+                ),
+                const SizedBox(height: 20),
+              ],
 
               // ---- Tombol favorit ----
               // Dulu: full-width, background hitam pekat ("card hitam" yang

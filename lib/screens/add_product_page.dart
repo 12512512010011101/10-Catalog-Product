@@ -7,7 +7,9 @@ import '../theme/app_theme.dart';
 import '../widgets/product_image.dart';
 
 class AddProductPage extends StatefulWidget {
-  const AddProductPage({super.key});
+  final List<String> categories;
+
+  const AddProductPage({super.key, required this.categories});
 
   @override
   State<AddProductPage> createState() => _AddProductPageState();
@@ -17,11 +19,21 @@ class _AddProductPageState extends State<AddProductPage> {
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
-  final _categoryController = TextEditingController();
   final _priceController = TextEditingController();
   final _stockController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _imageUrlController = TextEditingController();
+
+  // Dulu kategori diketik manual (rawan typo/beda-beda ejaan, jadi kategori
+  // "Pakaian" dan "pakaian" dianggap 2 kategori berbeda). Sekarang dipilih
+  // dari kategori yang SUDAH ada lewat dropdown. `_newCategoryController`
+  // cuma dipakai kalau user pilih opsi "+ Kategori Baru" di paling bawah
+  // dropdown, untuk kasus produk pertama dengan kategori yang belum ada.
+  String? _selectedCategory;
+  final _newCategoryController = TextEditingController();
+  static const String _newCategoryOption = '__new__';
+
+  bool get _isAddingNewCategory => _selectedCategory == _newCategoryOption;
 
   // Menyimpan gambar yang dipilih dari galeri (kalau ada). Kalau user
   // memilih gambar dari galeri, ini yang dipakai dan field URL diabaikan.
@@ -56,7 +68,7 @@ class _AddProductPageState extends State<AddProductPage> {
   @override
   void dispose() {
     _nameController.dispose();
-    _categoryController.dispose();
+    _newCategoryController.dispose();
     _priceController.dispose();
     _stockController.dispose();
     _descriptionController.dispose();
@@ -66,6 +78,13 @@ class _AddProductPageState extends State<AddProductPage> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
+      // Kategori: kalau user pilih "+ Kategori Baru", ambil dari field teks
+      // yang muncul di bawah dropdown. Kalau tidak, pakai kategori yang
+      // dipilih langsung dari daftar yang sudah ada.
+      final category = _isAddingNewCategory
+          ? _newCategoryController.text.trim()
+          : (_selectedCategory ?? '');
+
       // Prioritas: gambar dari galeri (kalau dipilih) > URL manual > kosong.
       String finalImage = '';
       if (_pickedImageBytes != null) {
@@ -78,7 +97,7 @@ class _AddProductPageState extends State<AddProductPage> {
       final newProduct = Product(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: _nameController.text.trim(),
-        category: _categoryController.text.trim(),
+        category: category,
         price: double.parse(_priceController.text.trim()),
         stock: int.parse(_stockController.text.trim()),
         description: _descriptionController.text.trim(),
@@ -200,19 +219,60 @@ class _AddProductPageState extends State<AddProductPage> {
                       },
                     ),
                     const SizedBox(height: 14),
-                    TextFormField(
-                      controller: _categoryController,
+                    DropdownButtonFormField<String>(
+                      initialValue: _selectedCategory,
                       decoration: const InputDecoration(
                         labelText: 'Kategori',
                         prefixIcon: Icon(Icons.category_outlined, color: AppColors.primary),
                       ),
+                      hint: const Text('Pilih kategori'),
+                      // Daftar kategori yang sudah ada (dari produk yang
+                      // sudah tersimpan), ditambah 1 opsi khusus di paling
+                      // bawah buat bikin kategori baru.
+                      items: [
+                        ...widget.categories.map(
+                          (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
+                        ),
+                        const DropdownMenuItem(
+                          value: _newCategoryOption,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.add, size: 16, color: AppColors.primary),
+                              SizedBox(width: 6),
+                              Text('Kategori Baru', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        ),
+                      ],
+                      onChanged: (value) => setState(() => _selectedCategory = value),
                       validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Kategori wajib diisi';
+                        if (value == null || value.isEmpty) {
+                          return 'Kategori wajib dipilih';
                         }
                         return null;
                       },
                     ),
+                    // Field ini cuma muncul kalau user pilih "Kategori Baru"
+                    // di dropdown atas -- dipakai buat produk pertama dengan
+                    // kategori yang belum pernah ada sebelumnya.
+                    if (_isAddingNewCategory) ...[
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: _newCategoryController,
+                        decoration: const InputDecoration(
+                          labelText: 'Nama Kategori Baru',
+                          prefixIcon: Icon(Icons.new_label_outlined, color: AppColors.primary),
+                        ),
+                        validator: (value) {
+                          if (!_isAddingNewCategory) return null;
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Nama kategori baru wajib diisi';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
                     const SizedBox(height: 14),
                     TextFormField(
                       controller: _priceController,

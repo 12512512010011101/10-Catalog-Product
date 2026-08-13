@@ -75,9 +75,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _goToAddProduct() async {
+    // Kirim daftar kategori yang sudah ada (tanpa "Semua", itu cuma opsi
+    // filter) supaya AddProductPage bisa tampilkan dropdown, bukan field
+    // ketik manual lagi.
+    final existingCategories = _categories.where((c) => c != 'Semua').toList();
     final newProduct = await Navigator.push<Product>(
       context,
-      fadeSlideRoute(const AddProductPage()),
+      fadeSlideRoute(AddProductPage(categories: existingCategories)),
     );
     if (newProduct != null) {
       setState(() => _products.add(newProduct));

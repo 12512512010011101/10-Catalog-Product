@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import 'home_page.dart';
+import 'main_nav_page.dart';
 
 /// Halaman pembuka (splash/onboarding) yang tampil sekali sebelum
-/// pengguna masuk ke HomePage. Mengikuti tema hitam-putih project ini
-/// (lihat AppColors di theme/app_theme.dart).
+/// pengguna masuk ke MainNavPage (Home + bottom navigation). Mengikuti
+/// tema hitam-putih project ini (lihat AppColors di theme/app_theme.dart).
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});
 
@@ -20,7 +20,7 @@ class OnboardingPage extends StatelessWidget {
   ];
 
   void _goToHome(BuildContext context) {
-    Navigator.of(context).pushReplacement(fadeSlideRoute(const HomePage()));
+    Navigator.of(context).pushReplacement(fadeSlideRoute(const MainNavPage()));
   }
 
   @override

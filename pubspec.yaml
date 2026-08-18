@@ -51,6 +51,12 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
 
+  # Dipakai sekali jalan (lewat command "dart run flutter_launcher_icons")
+  # buat generate ikon aplikasi Android/iOS otomatis dari 1 gambar di
+  # assets/icon/logo.png. Bukan dipakai saat runtime, jadi cukup di
+  # dev_dependencies, bukan dependencies.
+  flutter_launcher_icons: ^0.14.3
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -65,6 +71,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
      - assets/images/
+     - assets/icon/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -92,3 +99,17 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# ---- Konfigurasi flutter_launcher_icons ----
+# Sumber ikon diambil dari assets/icon/logo.png (file yang sudah kamu taruh
+# di situ). android: true & ios: true artinya digenerate untuk kedua platform.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/logo1.png"
+  # Adaptive icon Android (opsional tapi disarankan) -- background putih di
+  # belakang logo supaya tetap rapi walau launcher HP motong ikon jadi bulat/
+  # kotak. Kalau logo.png kamu sudah full-bleed (nggak transparan), 2 baris
+  # ini boleh dihapus.
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icon/logo1.png"

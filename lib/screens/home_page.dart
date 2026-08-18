@@ -564,6 +564,7 @@ class _ProductGridItem extends StatelessWidget {
                       color: AppColors.primary.withValues(alpha: 0.06),
                       child: ProductImage(
                         path: product.imagePath,
+                        fit: BoxFit.contain,
                         placeholderIcon: Icons.checkroom,
                         placeholderIconSize: 34,
                       ),

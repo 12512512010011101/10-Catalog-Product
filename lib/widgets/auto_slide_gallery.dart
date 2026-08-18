@@ -93,6 +93,7 @@ class _AutoSlideGalleryState extends State<AutoSlideGallery> {
                     color: AppColors.primary.withValues(alpha: 0.06),
                     child: ProductImage(
                       path: images[index],
+                      fit: BoxFit.contain,
                       placeholderIcon: Icons.image_not_supported,
                       placeholderIconSize: 56,
                     ),

@@ -50,6 +50,7 @@ class ProductCard extends StatelessWidget {
                       color: AppColors.primary.withValues(alpha: 0.1),
                       child: ProductImage(
                         path: product.imagePath,
+                        fit: BoxFit.contain,
                         placeholderIcon: Icons.shopping_bag_outlined,
                         placeholderIconSize: 26,
                       ),
